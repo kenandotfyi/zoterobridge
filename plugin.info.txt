@@ -1,0 +1,7 @@
+base   zoterobridge
+author Kenan Akinci
+email  hey@kenan.fyi
+date   2026-10-18
+name   Zotero Bridge
+desc   One-way Zotero document and annotation indexing for local wiki search.
+url    https://github.com/kenandotfyi/zoterobridge
