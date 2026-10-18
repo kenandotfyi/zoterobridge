@@ -1,5 +1,7 @@
 # Zotero Bridge
 
+![Screenshot](SearchBarandResults.png)
+
 I created this plugin to integrate my Zotero library into my Dokuwiki instance and give the ability to search Zotero and paste the results in a formatted way, for stuff like annotations and documents. I use Zotero as more of a document manager than a reference manager so bibliography or citation creation stuff are not implemented in this plugin. It's pure document and annotation index search for quickly referencing my Zotero entries in my DokuWiki articles. 
 
 This is inpired by other Zotero integrations in other PKM-style tools like Obsidian or Logseq. 
