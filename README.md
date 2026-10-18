@@ -1,24 +1,39 @@
 # Zotero Bridge
 
-One-way Zotero document and native PDF annotation indexing for DokuWiki. The plugin provides connection administration, automatic freshness checks, scheduled incremental synchronization, manual full/incremental synchronization, a persistent SQLite/FTS5 index, and private search/status endpoints. The matching Fokus template supplies unified wiki/document/annotation search and editor insertion.
+I created this plugin to integrate my Zotero library into my Dokuwiki instance and give the ability to search Zotero and paste the results in a formatted way, for stuff like annotations and documents. I use Zotero as more of a document manager than a reference manager so bibliography or citation creation stuff are not implemented in this plugin. It's pure document and annotation index search for quickly referencing my Zotero entries in my DokuWiki articles. 
 
-## Install and connect
+This is inpired by other Zotero integrations in other PKM-style tools like Obsidian or Logseq. 
 
-Requires PHP 8.2+, `pdo_sqlite` with SQLite FTS5, and PHP HTTPS streams with a trusted CA store. Install the `zoterobridge` directory under `lib/plugins/` and enable it. Open **Admin → Zotero Bridge**, or **Fokus Butler → Zotero** when the updated companion is installed. The backend works without Fokus or Butler.
+It synchronizes the library to my DokuWiki during the initial setup as well as between timed triggers which can be set in the Admin menu. Since the library is quite big, I used SQLite to store the index. System creates it under the data/meta/zoterobridge.
 
-Create a dedicated key at [Zotero API key settings](https://www.zotero.org/settings/keys), allowing read access to the personal library. Write permission and attachment-file access are unnecessary. The plugin detects the personal library's numeric user ID from the key. Group libraries are outside this initial implementation.
+It uses the official Zotero API of course with an API Key, where either you can enter it in the Admin menu (which I don't recommend) or in your server's environment variables, which is much better in terms of securing the key. Key permissions do not require Write access, since this is just a one-way sync.
 
-Credentials use the same deployment pattern as the Todoist integration, in this order:
+Credentials use the same deployment pattern as my Todoist integration (bundled in Fokus Butler), in this order:
 
 1. `/run/secrets/zotero_api_key`
 2. `ZOTERO_API_KEY`
 3. `$conf['plugin']['zoterobridge']['api_key']`, saved through Zotero Bridge administration
 
-For services like Coolify, add `ZOTERO_API_KEY` as a runtime environment variable for the DokuWiki service and redeploy. For a Compose-based deployment, also ensure its service `environment` section passes the variable into PHP; this repository's Compose definition already does. Localhost can use the admin password field without setting an environment variable.
+Since this is only the backend sort of part of the integration and do not add a valuable user experience alone, I recommend checking out my template [Fokus](https://github.com/kenandotfyi/dokuwiki-template-fokus) and its companion plugin [Fokus Butler](https://github.com/kenandotfyi/fokusbutler). *Fokus* adds the nice search UI, where the Zotero sqlite index results as well as normal dokuwiki results are shown and give you the actions to interact. Fokus Butler is a companion plugin which adds more integrations and useful stuff and checks the integration and dependent plugins.
+
+_DISCLAIMER: This plugin is built with the help of AI. It works quite well, since it is also quite simple, but there might be some unnecessary stuff built because of it. For my 1000+ item Zotero library, the generated SQLite database is returning the search results blazingly fast, so I have been daily driving this._ 
+
+## Requirements and setup
+
+Requires PHP 8.2+, `pdo_sqlite` with SQLite FTS5, and PHP HTTPS streams with a trusted CA store.
+
+Create a dedicated key at [Zotero API key settings](https://www.zotero.org/settings/keys), allowing read access to the personal library. Write permission and attachment-file access are unnecessary. The plugin detects the personal library's numeric user ID from the key. Group libraries are outside this initial implementation.
+
+For services like Coolify, add `ZOTERO_API_KEY` as a runtime environment variable for the DokuWiki service and redeploy. For a Compose-based deployment, also ensure its service `environment` section passes the variable into PHP.
 
 The admin page shows the active source and never echoes a stored key. A deployment key takes precedence over the local value and hides the local-edit controls. Leave the field blank to preserve the saved value, or select **Remove saved key** to clear it. **Test connection** can test an entered replacement before it is saved. **Synchronize now** always uses the saved/deployment key.
 
-The local configuration fallback is stored in DokuWiki's server-side PHP configuration, as in the Todoist integration. Protect configuration backups accordingly. No credentials are sent to the browser, included in API URLs, or stored in the search database.
+The local configuration fallback is stored in DokuWiki's server-side PHP configuration. So be careful about local configuration backups, since DokuWiki backs up the conf/ folder. For production environment, I recommend doing it over the env. variables in your server/deployment service, as I mentioned above.
+
+<details>
+
+<summary>Usage and development</summary>
+
 
 ## Use the index
 
@@ -70,3 +85,6 @@ Backend tests are offline and use fabricated keys and library fixtures. DokuWiki
 Large-library verification on localhost completed a 2,985-object/47-collection import, publishing 1,146 searchable documents and 619 annotations. Browser verification also exercises page reload/resume and retryable lock contention. Automated fixtures include a 1,201-document import, interrupted/resumed requests without duplicate downloads, remote version conflicts, and schema migration preserving the previous index.
 
 API behavior follows [Zotero API reads](https://www.zotero.org/support/dev/web_api/v3/basics) and [version-based synchronization](https://www.zotero.org/support/dev/web_api/v3/syncing).
+
+
+</details>
