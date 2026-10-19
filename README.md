@@ -52,11 +52,11 @@ Synchronization runs as a durable job, advancing one batch of at most 50 objects
 Each web step has a 45-second retrieval budget, with individual HTTP requests limited to 30 seconds. The initial import is no longer limited to one 90-second web request. Without JavaScript, a form submission prepares the job but does not run subsequent batches; use the CLI entry point, which drives the same saved job for up to 15 minutes:
 
 ```sh
-php lib/plugins/zoterobridge/bin/sync.php
-php lib/plugins/zoterobridge/bin/sync.php --full
+php DOKUWIKI_PATH/lib/plugins/zoterobridge/bin/sync.php
+php DOKUWIKI_PATH/lib/plugins/zoterobridge/bin/sync.php --full
 ```
 
-For a nightly incremental check, add `php lib/plugins/zoterobridge/bin/sync.php --scheduled` as a server scheduled task from the DokuWiki root and set its schedule to `0 3 * * *` (03:00 daily). Run it inside the actual DokuWiki installation/container so credentials, PHP extensions, configuration, and filesystem ownership match the web process. The CLI resolves the wiki root from its installed location. Set the task timezone to the timezone you want; displayed timestamps use PHP's configured timezone. The default command is incremental and only downloads changes since the saved library version. Reserve `--full` for an intentional rebuild, not the nightly task.
+For a nightly incremental check, add `php DOKUWIKI_PATH/lib/plugins/zoterobridge/bin/sync.php --scheduled` as a server scheduled task from the DokuWiki root and set its schedule to `0 3 * * *` (03:00 daily). Run it inside the actual DokuWiki installation/container so credentials, PHP extensions, configuration, and filesystem ownership match the web process. The CLI resolves the wiki root from its installed location. Set the task timezone to the timezone you want; displayed timestamps use PHP's configured timezone. The default command is incremental and only downloads changes since the saved library version. Reserve `--full` for an intentional rebuild, not the nightly task.
 
 The `--scheduled` flag sends a Pushover notification only when the run fails; successful checks and “no changes” checks stay quiet. Set `PUSHOVER_APP_TOKEN` and `PUSHOVER_USER_KEY` as environment variables available to the Coolify scheduled task. These credentials are never saved in DokuWiki configuration or SQLite. If either variable is missing, the sync still runs and reports the missing notification setup to the task log.
 
